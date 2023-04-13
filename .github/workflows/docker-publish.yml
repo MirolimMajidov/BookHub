@@ -9,7 +9,7 @@ on:
     tags: [ 'latest' ]
 
 env:
-  REGISTRY: mirolimmajidov
+  REGISTRY: ${{ secrets.DOCKERHUB_USERNAME }}
   IMAGE_NAME: bookhub
 
  
@@ -24,8 +24,8 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v1
         with:
-          username: ${{ secrets.DOCKER_USER }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
                 
       - name: Build and push docker image
         id: docker_build_identity
