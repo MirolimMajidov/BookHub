@@ -1,0 +1,44 @@
+name: Docker Builds
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ "master" ]
+    # Publish tags as releases.
+    tags: [ 'latest' ]
+
+env:
+  REGISTRY: mirolimmajidov
+  IMAGE_NAME: bookhub
+
+ 
+jobs:
+  push_to_registry:
+    name: Push Docker images to Docker Hub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+        
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+                
+      - name: Build and push docker image
+        id: docker_build_identity
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ././Dockerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IDENTITY_IMAGE_NAME }}:latest
+
+      - name: Sign the published Docker image
+        env:
+          COSIGN_EXPERIMENTAL: "true"
+        # This step uses the identity token to provision an ephemeral certificate
+        # against the sigstore community Fulcio instance.
+        run: echo "${{ steps.meta.outputs.tags }}" | xargs -I {} cosign sign {}@${{ steps.build-and-push.outputs.digest }}
