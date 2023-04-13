@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: my-book-store
+  template:
+    metadata:
+      labels:
+        app: my-book-store
+    spec:
+      containers:
+        - name: my-app
+          image: mirolimmajidov/bookhub:latest
+          ports:
+            - containerPort: 80

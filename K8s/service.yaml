@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+spec:
+  selector:
+    app: my-book-store
+  ports:
+    - name: http
+      protocol: TCP
+      port: 9595
+      targetPort: 80
+  type: LoadBalancer
