@@ -6,7 +6,8 @@ on:
   push:
     branches: [ "master" ]
     # Publish tags as releases.
-    tags: [ 'latest' ]
+    tags: 
+      - 'v*.*.*'
 
 env:
   REGISTRY: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -34,11 +35,16 @@ jobs:
           context: .
           file: ././Dockerfile
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-
-      - name: Sign the published Docker image
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref }}
+          
+      - name: Create release
+        uses: actions/create-release@v1.0.0
         env:
-          COSIGN_EXPERIMENTAL: "true"
-        # This step uses the identity token to provision an ephemeral certificate
-        # against the sigstore community Fulcio instance.
-        run: echo "${{ steps.meta.outputs.tags }}" | xargs -I {} cosign sign {}@${{ steps.build-and-push.outputs.digest }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            This is the release for version ${{ github.ref }}.
+          draft: false
+          prerelease: false
