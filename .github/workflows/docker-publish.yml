@@ -1,4 +1,4 @@
-name: Docker Builds
+name: Build and push Docker image to Docker Hub
 
 # Controls when the workflow will run
 on:
