@@ -36,7 +36,7 @@ jobs:
           file: ././Dockerfile
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref }}
-          
+
       - name: Create release
         uses: actions/create-release@v1.0.0
         env:
