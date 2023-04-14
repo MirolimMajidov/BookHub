@@ -41,7 +41,7 @@ jobs:
           push: ${{ env.PUSH }}
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:v1.5.${{ github.run_number }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref }}
 
       - name: Create release
         uses: actions/create-release@v1.0.0
