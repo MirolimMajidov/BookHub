@@ -15,6 +15,7 @@ on:
 env:
   REGISTRY: ${{ secrets.DOCKERHUB_USERNAME }}
   IMAGE_NAME: bookhub
+  PUSH: ${{ github.ref == 'refs/heads/master' }}
 
  
 jobs:
@@ -37,7 +38,7 @@ jobs:
         with:
           context: .
           file: ././Dockerfile
-          push: true
+          push: ${{ env.PUSH }}
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
       - name: Sign the published Docker image
