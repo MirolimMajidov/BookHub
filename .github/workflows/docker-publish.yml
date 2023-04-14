@@ -6,48 +6,39 @@ on:
   push:
     branches: [ "master" ]
     # Publish tags as releases.
-  pull_request:
-    branches: [ "master" ]
+    tags: [ 'latest' ]
 
 env:
   REGISTRY: ${{ secrets.DOCKERHUB_USERNAME }}
   IMAGE_NAME: bookhub
-  VERSION: '1.0.0'
 
  
 jobs:
-  build_image:
-    name: Build Docker image
+  push_to_registry:
+    name: Push Docker images to Docker Hub
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
         
-      - name: Build docker image
-        id: docker_build
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./Dockerfile
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
-          build-arg: APP_VERSION=${{ env.VERSION }}
-
-  push_to_registry:
-    name: Push Docker image to Docker Hub
-    runs-on: ubuntu-latest
-    needs: build_image
-    steps:
       - name: Log in to Docker Hub
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
                 
-      - name: Push docker image
-        id: docker_push
+      - name: Build and push docker image
+        id: docker_build_identity
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: ./Dockerfile
+          file: ././Dockerfile
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
+      - name: Sign the published Docker image
+        env:
+          COSIGN_EXPERIMENTAL: "true"
+        # This step uses the identity token to provision an ephemeral certificate
+        # against the sigstore community Fulcio instance.
+        run: echo "${{ steps.meta.outputs.tags }}" | xargs -I {} cosign sign {}@${{ steps.build-and-push.outputs.digest }}
