@@ -6,7 +6,11 @@ on:
   push:
     branches: [ "master" ]
     # Publish tags as releases.
-    tags: [ 'latest' ]
+    tags: 
+      - 'v*.*.*'
+
+  pull_request:
+    branches: [ "master" ]
 
 env:
   REGISTRY: ${{ secrets.DOCKERHUB_USERNAME }}
