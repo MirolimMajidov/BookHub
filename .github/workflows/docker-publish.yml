@@ -6,7 +6,6 @@ on:
   push:
     branches: [ "master" ]
     # Publish tags as releases.
-    tags: [ 'v*' ]
   pull_request:
     branches: [ "master" ]
 
@@ -29,7 +28,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: ./Dockerfile
+          file: ././Dockerfile
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
           build-args: |
             APP_VERSION=${{ env.VERSION }}
@@ -50,6 +49,6 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: ./Dockerfile
+          file: ././Dockerfile
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
