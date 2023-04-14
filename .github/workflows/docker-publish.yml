@@ -7,7 +7,7 @@ on:
     branches: [ "master" ]
     # Publish tags as releases.
     tags: 
-      - 'v*.*.*'
+      - 'v1.*.*'
 
   pull_request:
     branches: [ "master" ]
@@ -15,7 +15,6 @@ on:
 env:
   REGISTRY: ${{ secrets.DOCKERHUB_USERNAME }}
   IMAGE_NAME: bookhub
-  VERSION: 1.0.0
   PUSH: ${{ github.ref == 'refs/heads/master' }}
 
  
@@ -40,8 +39,21 @@ jobs:
           context: .
           file: ././Dockerfile
           push: ${{ env.PUSH }}
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
-          build-arg: APP_VERSION=${{ env.VERSION }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:v1.5.${{ github.run_number }}
+
+      - name: Create release
+        uses: actions/create-release@v1.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            This is the release for version ${{ github.ref }}.
+          draft: false
+          prerelease: false
 
       - name: Sign the published Docker image
         env:
