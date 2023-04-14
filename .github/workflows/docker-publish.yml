@@ -40,7 +40,8 @@ jobs:
           context: .
           file: ././Dockerfile
           push: ${{ env.PUSH }}
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+          build-arg: APP_VERSION=${{ env.VERSION }}
 
       - name: Sign the published Docker image
         env:
