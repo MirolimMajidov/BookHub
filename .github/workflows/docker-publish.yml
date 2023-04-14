@@ -44,18 +44,6 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION_NUMBER }}
 
-      - name: Create release
-        uses: actions/create-release@v1.0.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: |
-            This is the release for version ${{ github.ref }}.
-          draft: false
-          prerelease: false
-
       - name: Sign the published Docker image
         env:
           COSIGN_EXPERIMENTAL: "true"
