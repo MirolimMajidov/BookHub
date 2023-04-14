@@ -16,6 +16,7 @@ env:
   REGISTRY: ${{ secrets.DOCKERHUB_USERNAME }}
   IMAGE_NAME: bookhub
   PUSH: ${{ github.ref == 'refs/heads/master' }}
+  VERSION_NUMBER: 1.${{ github.run_number }}
 
  
 jobs:
@@ -41,7 +42,7 @@ jobs:
           push: ${{ env.PUSH }}
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION_NUMBER }}
 
       - name: Create release
         uses: actions/create-release@v1.0.0
