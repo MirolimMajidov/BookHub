@@ -66,6 +66,8 @@ namespace BookHub
             {
                 endpoints.MapControllers();
             });
+
+            app.Run(async (context) => await context.Response.WriteAsync("There is no page with a default path, so you need to open the /swagger path!"));
         }
     }
 }
