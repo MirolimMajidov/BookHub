@@ -18,7 +18,6 @@ jobs:
       contents: write
       issues: write
 
-    needs: main
     runs-on: ubuntu-latest
     steps:
       - name: ⬇️ Checkout repo
