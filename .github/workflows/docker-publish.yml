@@ -16,23 +16,49 @@ env:
 
 jobs:
   release:
-    name: Release
+    permissions:
+      actions: write #  to cancel/stop running workflows (styfle/cancel-workflow-action)
+      contents: write #  to create release tags (cycjimmy/semantic-release-action)
+      issues: write # to post release that resolves an issue (cycjimmy/semantic-release-action)
+
+    needs: main
     runs-on: ubuntu-latest
+    if:
+      ${{ github.repository == 'testing-library/react-testing-library' &&
+      github.event_name == 'push' }}
     steps:
-      - name: Set up Node.js 20.x
-        uses: actions/setup-node@v3
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+
+      - name: ⎔ Setup node
+        uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
+          node-version: 14
 
-      - id: semantic-release
-        run: |
-          VERSION=$(npx semantic-release --dry-run | grep "next release version" | awk '{print $NF}')
-          echo "Resolved version: $VERSION"
-          echo "version=$VERSION" >> $GITHUB_ENV
+      - name: 📥 Download deps
+        uses: bahmutov/npm-install@v1
+        with:
+          useLockFile: false
 
-      - name: Output Version
-        run:
-          echo "Version: ${{ env.version }}"
+      - name: 🏗 Run build script
+        run: npm run build
+
+      - name: 🚀 Release
+        uses: cycjimmy/semantic-release-action@v2
+        with:
+          semantic_version: 17
+          branches: |
+            [
+              '+([0-9])?(.{+([0-9]),x}).x',
+              'main',
+              'next',
+              'next-major',
+              {name: 'beta', prerelease: true},
+              {name: 'alpha', prerelease: true}
+            ]
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   push_to_registry:
     needs: release
