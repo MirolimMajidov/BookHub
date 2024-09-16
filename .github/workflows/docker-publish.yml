@@ -26,10 +26,13 @@ jobs:
 
       - id: semantic-release
         run: |
-          npx semantic-release
-          VERSION=$(cat VERSION)
+          VERSION=$(npx semantic-release --dry-run | grep "next release version" | awk '{print $NF}')
           echo "Resolved version: $VERSION"
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_ENV
+
+      - name: Output Version
+        run:
+          echo "Version: ${{ env.version }}"
 
   push_to_registry:
     needs: release
