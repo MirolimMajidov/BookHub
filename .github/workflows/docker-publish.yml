@@ -17,12 +17,55 @@ env:
 
  
 jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.semantic-release.outputs.version }}
+    steps:
+      - id: semantic-release
+        run: |
+          npx semantic-release
+          VERSION=$(cat VERSION)
+          echo "Resolved version: $VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+  deploy:
+    needs: release
+    name: Release ${{ needs.release.outputs.version }}
+    runs-on: ubuntu-latest
+          
   push_to_registry:
     name: Push Docker images to Docker Hub
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # to be able to publish a GitHub release
+      issues: write # to be able to comment on released issues
+      pull-requests: write # to be able to comment on released pull requests
+      id-token: write # to enable use of OIDC for npm provenance
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
+
+      - name: Action For Semantic Release
+        uses: cycjimmy/semantic-release-action@v4.1.0
+        with:
+          semantic_version: 19.0.5
+          branches: |
+                    [
+                      'master',
+                      {
+                        name: 'deploy-dev',
+                        prerelease: true
+                      },
+                      {
+                        name: 'deploy-stating',
+                        prerelease: true
+                      }
+                    ] 
+          tag_format: "v${version}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         
       - name: Log in to Docker Hub
         uses: docker/login-action@v1
