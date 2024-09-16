@@ -1,11 +1,8 @@
 name: Build and push Docker image to Docker Hub
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
   push:
     branches: [ "master" ]
-
   pull_request:
     branches: [ "master" ]
 
@@ -17,15 +14,12 @@ env:
 jobs:
   release:
     permissions:
-      actions: write #  to cancel/stop running workflows (styfle/cancel-workflow-action)
-      contents: write #  to create release tags (cycjimmy/semantic-release-action)
-      issues: write # to post release that resolves an issue (cycjimmy/semantic-release-action)
+      actions: write
+      contents: write
+      issues: write
 
     needs: main
     runs-on: ubuntu-latest
-    if:
-      ${{ github.repository == 'testing-library/react-testing-library' &&
-      github.event_name == 'push' }}
     steps:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v4
@@ -64,10 +58,10 @@ jobs:
     name: Push Docker images to Docker Hub
     runs-on: ubuntu-latest
     permissions:
-      contents: write # to be able to publish a GitHub release
-      issues: write # to be able to comment on released issues
-      pull-requests: write # to be able to comment on released pull requests
-      id-token: write # to enable use of OIDC for npm provenance
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
@@ -84,7 +78,7 @@ jobs:
         with:
           context: .
           file: ././Dockerfile
-          push: ${{ github.ref == 'refs/heads/master' }}  # Ensures pushing only on master
+          push: ${{ github.ref == 'refs/heads/master' }}
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION_NUMBER }}
