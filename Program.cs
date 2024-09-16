@@ -1,6 +1,4 @@
 using BookHub.DataProvider;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
 
 namespace BookHub
 {
