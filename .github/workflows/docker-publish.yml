@@ -53,7 +53,7 @@ jobs:
           semantic_version: 19.0.5
           branches: |
                     [
-                      'master',
+                      'master',  'MirolimMajidov-TestVersioning',
                       {
                         name: 'deploy-dev',
                         prerelease: true
