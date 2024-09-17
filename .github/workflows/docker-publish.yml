@@ -28,18 +28,18 @@ jobs:
     needs: Versioning
     runs-on: ubuntu-latest
     steps:
-      - name: Use the new version
+      - name: Print the new version
         run: |
           echo "The new version is ${{ needs.Versioning.outputs.NEW_VERSION }}"
         
-  Release:
-    needs: Versioning
-    if: ${{ needs.Versioning.outputs.NEW_VERSION != '' }}  # Check if NEW_VERSION has a value
-    uses: ./.github/workflows/docker-build-push.yml
-    with:
-      docker_file_path: './Dockerfile'
-      image_name: 'bookhub'
-      version: ${{ needs.Versioning.outputs.NEW_VERSION }}
-    secrets:
-      username: ${{ secrets.DOCKERHUB_USERNAME }}
-      password: ${{ secrets.DOCKERHUB_TOKEN }}
+#  Release:
+#    needs: Versioning
+#    if: ${{ needs.Versioning.outputs.NEW_VERSION != '' }}  # Check if NEW_VERSION has a value
+#    uses: ./.github/workflows/docker-build-push.yml
+#    with:
+#      docker_file_path: './Dockerfile'
+#      image_name: 'bookhub'
+#      version: ${{ needs.Versioning.outputs.NEW_VERSION }}
+#    secrets:
+#      username: ${{ secrets.DOCKERHUB_USERNAME }}
+#      password: ${{ secrets.DOCKERHUB_TOKEN }}
