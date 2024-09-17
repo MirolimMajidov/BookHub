@@ -12,6 +12,7 @@ env:
   IMAGE_NAME: bookhub
   PUSH: true
   VERSION_NUMBER: 1.${{ github.run_number }}
+  PROJECT_PATH: BookHub.csproj
 
 permissions:
   contents: write  # Grant the workflow permission to push to the repository
@@ -31,7 +32,7 @@ jobs:
           BRANCH_NAME=$(echo "${GITHUB_REF#refs/heads/}")
           
           # Extract current version from the .csproj file
-          VERSION=$(grep '<Version>' BookHub.csproj | sed -e 's/<[^>]*>//g' || echo "1.0.0")
+          VERSION=$(grep '<Version>' ${{ env.PROJECT_PATH }} | sed -e 's/<[^>]*>//g' || echo "1.0.0")
           
           # Split the version into major, minor, and patch components
           IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
@@ -57,12 +58,12 @@ jobs:
           echo "New version: $NEW_VERSION"
           
           # Ensure the .csproj file has a <Version> tag
-          if grep -q '<Version>' BookHub.csproj; then
+          if grep -q '<Version>' ${{ env.PROJECT_PATH }}; then
             # Replace the version in the .csproj file
-            sed -i "s/<Version>.*<\/Version>/<Version>$NEW_VERSION<\/Version>/" BookHub.csproj
+            sed -i "s/<Version>.*<\/Version>/<Version>$NEW_VERSION<\/Version>/" ${{ env.PROJECT_PATH }}
           else
             # Add the version tag if not present
-            sed -i "s|</Project>|<PropertyGroup><Version>$NEW_VERSION</Version></PropertyGroup></Project>|" BookHub.csproj
+            sed -i "s|</Project>|<PropertyGroup><Version>$NEW_VERSION</Version></PropertyGroup></Project>|" ${{ env.PROJECT_PATH }}
           fi
           
           # Save the new version as an environment variable
@@ -73,8 +74,8 @@ jobs:
           git config user.email github-actions@github.com
           
           # Commit and push the updated .csproj file back to the same branch
-          git checkout -B "$BRANCH_NAME"
-          git add BookHub.csproj
+          git checkout "$BRANCH_NAME" || git checkout -b "$BRANCH_NAME"
+          git add ${{ env.PROJECT_PATH }}
           git commit -m "Update version to $NEW_VERSION"
           git push origin "$BRANCH_NAME" || true
 
