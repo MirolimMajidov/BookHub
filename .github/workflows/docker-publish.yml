@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   push_to_registry:
-    needs: release
+    needs: release0
     name: Push Docker images to Docker Hub
     runs-on: ubuntu-latest
     permissions:
