@@ -6,9 +6,6 @@ on:
       DOCKER_FILE_PATH:
         required: true
         type: string
-      REGISTRY:
-        required: true
-        type: string
       IMAGE_NAME:
         required: true
         type: string

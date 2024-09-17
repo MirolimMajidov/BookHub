@@ -31,7 +31,6 @@ jobs:
       DOCKER_FILE_PATH: './Dockerfile'  # Passing as string instead of env
       IMAGE_NAME: 'bookhub'  # Passing as string instead of env
       NEW_VERSION: ${{ needs.versioning.outputs.NEW_VERSION }}  # Use output from previous job
-      REGISTRY: ${{ secrets.DOCKERHUB_USERNAME }}  # Pass the Docker Hub username as the registry
     secrets:
       username: ${{ secrets.DOCKERHUB_USERNAME }}  # Passing secrets as inputs to reusable workflow
       password: ${{ secrets.DOCKERHUB_TOKEN }}  # Passing secrets as inputs to reusable workflow
