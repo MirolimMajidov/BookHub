@@ -52,10 +52,11 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           
-          # Commit and push the updated .csproj file back to the triggering branch
-          git add .
+          # Commit and push the updated .csproj file back to the same branch
+          git checkout -B MirolimMajidov-TestVersioning  # Ensure you're on the correct branch
+          git add BookHub.csproj
           git commit -m "Update version to $NEW_VERSION"
-          git push -f --set-upstream origin MirolimMajidov-TestVersioning
+          git push origin MirolimMajidov-TestVersioning
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v1
