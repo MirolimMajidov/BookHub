@@ -1,4 +1,5 @@
-name: Build and push Docker image to Docker Hub
+# .github/workflows/main.yml
+name: Build and Push Docker Image to Docker Hub
 
 on:
   push:
@@ -13,91 +14,17 @@ env:
   PROJECT_PATH: BookHub.csproj
   DOCKER_FILE_PATH: ./Dockerfile
 
-permissions:
-  contents: write  # Grant the workflow permission to push to the repository
-
 jobs:
-  push_to_registry:
-    name: Push Docker images to Docker Hub
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out repository code
-        uses: actions/checkout@v3
+  versioning:
+    uses: ./.github/workflows/versioning.yml
+    with:
+      PROJECT_PATH: ${{ env.PROJECT_PATH }}
 
-      - name: Extract and update version from .csproj
-        id: update_version
-        run: |
-          # Get the current branch name
-          BRANCH_NAME=$(echo "${GITHUB_REF#refs/heads/}")
-          
-          # Extract current version from the .csproj file
-          VERSION=$(grep '<Version>' ${{ env.PROJECT_PATH }} | sed -e 's/<[^>]*>//g' || echo "1.0.0")
-          
-          # Split the version into major, minor, and patch components
-          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
-          
-          # Set default values if components are empty
-          MAJOR=${MAJOR:-1}
-          MINOR=${MINOR:-0}
-          PATCH=${PATCH:-0}
-          
-          # Increment the patch version and check if it hits 100
-          PATCH=$((PATCH+1))
-          if [ "$PATCH" -ge 100 ]; then
-            PATCH=0
-            MINOR=$((MINOR+1))
-          fi
-          
-          # Create the new version
-          NEW_VERSION="$MAJOR.$MINOR.$PATCH"
-          
-          # Remove leading and trailing spaces
-          NEW_VERSION=$(echo "$NEW_VERSION" | xargs)
-          
-          echo "New version: $NEW_VERSION"
-          
-          # Ensure the .csproj file has a <Version> tag
-          if grep -q '<Version>' ${{ env.PROJECT_PATH }}; then
-            # Replace the version in the .csproj file
-            sed -i "s/<Version>.*<\/Version>/<Version>$NEW_VERSION<\/Version>/" ${{ env.PROJECT_PATH }}
-          else
-            # Add the version tag if not present
-            sed -i "s|</Project>|<PropertyGroup><Version>$NEW_VERSION</Version></PropertyGroup></Project>|" ${{ env.PROJECT_PATH }}
-          fi
-          
-          # Save the new version as an environment variable
-          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
-
-          # Set up git
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          
-          # Commit and push the updated .csproj file back to the same branch
-          git checkout "$BRANCH_NAME" || git checkout -b "$BRANCH_NAME"
-          git add ${{ env.PROJECT_PATH }}
-          git commit -m "Update version to $NEW_VERSION"
-          git push origin "$BRANCH_NAME" || true
-
-      - name: Create Git tag
-        id: create_tag
-        run: |
-          # Create a Git tag for the new version
-          git tag "v${{ env.NEW_VERSION }}"
-          git push origin "v${{ env.NEW_VERSION }}"
-
-      - name: Login to Docker Hub
-        id: login_docker_hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build and push docker image
-        id: publish_docker_image
-        uses: docker/build-push-action@v6
-        with:
-          file: ${{ env.DOCKER_FILE_PATH }}
-          push: true
-          tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.NEW_VERSION }}
+  docker_build_and_push:
+    needs: versioning
+    uses: ./.github/workflows/docker-build-push.yml
+    with:
+      DOCKER_FILE_PATH: ${{ env.DOCKER_FILE_PATH }}
+      REGISTRY: ${{ env.REGISTRY }}
+      IMAGE_NAME: ${{ env.IMAGE_NAME }}
+      NEW_VERSION: ${{ needs.versioning.outputs.NEW_VERSION }}
