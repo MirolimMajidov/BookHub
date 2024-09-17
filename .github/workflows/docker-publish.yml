@@ -27,6 +27,9 @@ jobs:
       - name: Extract and update version from .csproj
         id: update_version
         run: |
+          # Get the current branch name
+          BRANCH_NAME=$(echo "${GITHUB_REF#refs/heads/}")
+          
           # Extract current version from the .csproj file
           VERSION=$(grep '<Version>' BookHub.csproj | sed -e 's/<[^>]*>//g' || echo "1.0.0")
           
@@ -70,10 +73,10 @@ jobs:
           git config user.email github-actions@github.com
           
           # Commit and push the updated .csproj file back to the same branch
-          git checkout -B MirolimMajidov-TestVersioning
+          git checkout -B "$BRANCH_NAME"
           git add BookHub.csproj
           git commit -m "Update version to $NEW_VERSION"
-          git push origin MirolimMajidov-TestVersioning || true
+          git push origin "$BRANCH_NAME" || true
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v1
