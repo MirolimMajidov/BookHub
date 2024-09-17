@@ -10,7 +10,6 @@ on:
 env:
   REGISTRY: ${{ secrets.DOCKERHUB_USERNAME }}
   IMAGE_NAME: bookhub
-#  PUSH: ${{ github.ref == 'refs/heads/master' }}
   PUSH: true
   VERSION_NUMBER: 1.${{ github.run_number }}
 
@@ -22,17 +21,17 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v2
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
       - name: Extract version from .csproj
         id: extract_version
         run: |
           VERSION=$(cat BookHub.csproj | grep '<Version>' | sed -e 's/<[^>]*>//g' | xargs || echo "1.0.0")
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push docker image
         uses: docker/build-push-action@v2
@@ -43,4 +42,4 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION_NUMBER }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
