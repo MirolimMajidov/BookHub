@@ -2,7 +2,7 @@ name: Build and push Docker image to Docker Hub
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master", "MirolimMajidov-TestVersioning" ]
   pull_request:
     branches: [ "master" ]
   workflow_dispatch:
@@ -21,7 +21,7 @@ jobs:
     name: Push Docker images to Docker Hub
     runs-on: ubuntu-latest
     steps:
-      - name: Check out the repo
+      - name: Check out repository code
         uses: actions/checkout@v2
 
       - name: Extract and update version from .csproj
