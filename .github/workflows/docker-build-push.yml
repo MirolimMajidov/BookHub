@@ -17,11 +17,9 @@ on:
         type: string
 
     secrets:
-      DOCKERHUB_USERNAME2:
-        description: 'Docker Hub username'
+      username:
         required: true
-      DOCKERHUB_TOKEN2:
-        description: 'Docker Hub token'
+      password:
         required: true
 
 jobs:
@@ -32,8 +30,8 @@ jobs:
         id: login_docker_hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME2 }}
-          password: ${{ secrets.DOCKERHUB_TOKEN2 }}
+          username: ${{ secrets.username }}
+          password: ${{ secrets.password }}
 
       - name: Build and push Docker image
         id: publish_docker_image
