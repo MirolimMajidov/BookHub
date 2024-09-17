@@ -32,3 +32,5 @@ jobs:
       REGISTRY: ${{ secrets.DOCKERHUB_USERNAME }}  # Directly using secret
       IMAGE_NAME: 'bookhub'  # Passing as string instead of env
       NEW_VERSION: ${{ needs.versioning.outputs.NEW_VERSION }}  # Use output from previous job
+    secrets:
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}  # Passing secrets as inputs to reusable workflow  
