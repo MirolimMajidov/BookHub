@@ -40,5 +40,5 @@ jobs:
           file: ${{ inputs.DOCKER_FILE_PATH }}
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.IMAGE_NAME }}:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.IMAGE_NAME }}:${{ inputs.NEW_VERSION }}
+            ${{ secrets.username }}/${{ inputs.IMAGE_NAME }}:latest
+            ${{ secrets.username }}/${{ inputs.IMAGE_NAME }}:${{ inputs.NEW_VERSION }}
