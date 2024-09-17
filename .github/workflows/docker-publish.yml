@@ -46,8 +46,10 @@ jobs:
           # Set up git
           git config user.name github-actions
           git config user.email github-actions@github.com
+          
+          # Commit and push the updated .csproj file back to the triggering branch
           git add .
-          git commit -m "Update image in gitops"
+          git commit -m "Update version to $NEW_VERSION"
           git push -f --set-upstream origin MirolimMajidov-TestVersioning
 
       - name: Log in to Docker Hub
