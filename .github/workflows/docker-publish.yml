@@ -20,12 +20,14 @@ jobs:
 
   Versioning:
     needs: CheckOutCode
+    if: github.ref == 'refs/heads/master'
     uses: ./.github/workflows/versioning.yml
     with:
       project_path: 'BookHub.csproj'
         
   Release:
     needs: Versioning
+    if: github.ref == 'refs/heads/master'
     uses: ./.github/workflows/docker-build-push.yml
     with:
       docker_file_path: './Dockerfile'
