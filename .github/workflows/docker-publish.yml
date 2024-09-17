@@ -22,7 +22,7 @@ jobs:
     needs: CheckOutCode
     uses: ./.github/workflows/versioning.yml
     with:
-      PROJECT_PATH: 'BookHub.csproj'
+      project_path: 'BookHub.csproj'
 
   Release:
     needs: versioning
