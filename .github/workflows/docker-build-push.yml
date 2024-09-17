@@ -23,7 +23,7 @@ on:
         required: true
 
 jobs:
-  Build_and_push:
+  Staging:
     runs-on: ubuntu-latest
     steps:
       - name: Login to Docker Hub
