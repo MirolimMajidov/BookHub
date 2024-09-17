@@ -6,6 +6,10 @@ on:
       project_path:
         required: true
         type: string
+    outputs:
+      firstword:
+        description: "The first output string"
+        value: 12345
 
 jobs:
   IncreaseVersion:
