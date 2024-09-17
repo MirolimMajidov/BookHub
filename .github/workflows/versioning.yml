@@ -2,14 +2,15 @@ name: Versioning
 
 on:
   workflow_call:
+    inputs:
+      PROJECT_PATH:
+        required: true
+        type: string
 
 jobs:
   update_version_and_tag:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v3
-
       - name: Increase version number
         id: update_version
         run: |
@@ -17,7 +18,7 @@ jobs:
           BRANCH_NAME=$(echo "${GITHUB_REF#refs/heads/}")
 
           # Extract current version from the .csproj file
-          VERSION=$(grep '<Version>' ${{ env.PROJECT_PATH }} | sed -e 's/<[^>]*>//g' || echo "1.0.0")
+          VERSION=$(grep '<Version>' ${{ inputs.PROJECT_PATH }} | sed -e 's/<[^>]*>//g' || echo "1.0.0")
 
           # Split the version into major, minor, and patch components
           IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
@@ -43,12 +44,12 @@ jobs:
           echo "New version: $NEW_VERSION"
 
           # Ensure the .csproj file has a <Version> tag
-          if grep -q '<Version>' ${{ env.PROJECT_PATH }}; then
+          if grep -q '<Version>' ${{ inputs.PROJECT_PATH }}; then
             # Replace the version in the .csproj file
-            sed -i "s/<Version>.*<\/Version>/<Version>$NEW_VERSION<\/Version>/" ${{ env.PROJECT_PATH }}
+            sed -i "s/<Version>.*<\/Version>/<Version>$NEW_VERSION<\/Version>/" ${{ inputs.PROJECT_PATH }}
           else
             # Add the version tag if not present
-            sed -i "s|</Project>|<PropertyGroup><Version>$NEW_VERSION</Version></PropertyGroup></Project>|" ${{ env.PROJECT_PATH }}
+            sed -i "s|</Project>|<PropertyGroup><Version>$NEW_VERSION</Version></PropertyGroup></Project>|" ${{ inputs.PROJECT_PATH }}
           fi
 
           # Save the new version as an environment variable
@@ -60,7 +61,7 @@ jobs:
 
           # Commit and push the updated .csproj file back to the same branch
           git checkout "$BRANCH_NAME" || git checkout -b "$BRANCH_NAME"
-          git add ${{ env.PROJECT_PATH }}
+          git add ${{ inputs.PROJECT_PATH }}
           git commit -m "Update version to $NEW_VERSION"
           git push origin "$BRANCH_NAME" || true
 

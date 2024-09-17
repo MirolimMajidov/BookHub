@@ -2,6 +2,19 @@ name: Docker Build and Push
 
 on:
   workflow_call:
+    inputs:
+      DOCKER_FILE_PATH:
+        required: true
+        type: string
+      REGISTRY:
+        required: true
+        type: string
+      IMAGE_NAME:
+        required: true
+        type: string
+      NEW_VERSION:
+        required: true
+        type: string
 
 jobs:
   build_and_push:
@@ -18,8 +31,8 @@ jobs:
         id: publish_docker_image
         uses: docker/build-push-action@v6
         with:
-          file: ${{ env.DOCKER_FILE_PATH }}
+          file: ${{ inputs.DOCKER_FILE_PATH }}
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.NEW_VERSION }}
+            ${{ inputs.REGISTRY }}/${{ inputs.IMAGE_NAME }}:latest
+            ${{ inputs.REGISTRY }}/${{ inputs.IMAGE_NAME }}:${{ inputs.NEW_VERSION }}
