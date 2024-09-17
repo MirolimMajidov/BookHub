@@ -18,20 +18,20 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v3
 
-  versioning:
+  Versioning:
     needs: CheckOutCode
     uses: ./.github/workflows/versioning.yml
     with:
       PROJECT_PATH: 'BookHub.csproj'  # Passing as string instead of env
 
-#  docker_build_and_push:
-#    needs: versioning
-#    uses: ./.github/workflows/docker-build-push.yml
-#    with:
-#      DOCKER_FILE_PATH: './Dockerfile'  # Passing as string instead of env
-#      IMAGE_NAME: 'bookhub'  # Passing as string instead of env
-#      NEW_VERSION: ${{ needs.versioning.outputs.NEW_VERSION }}  # Use output from previous job
-#      REGISTRY: ${{ secrets.DOCKERHUB_USERNAME }}  # Pass the Docker Hub username as the registry
-#    secrets:
-#      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}  # Passing secrets as inputs to reusable workflow
-#      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}  # Passing secrets as inputs to reusable workflow
+  Docker_build_and_push:
+    needs: versioning
+    uses: ./.github/workflows/docker-build-push.yml
+    with:
+      DOCKER_FILE_PATH: './Dockerfile'  # Passing as string instead of env
+      IMAGE_NAME: 'bookhub'  # Passing as string instead of env
+      NEW_VERSION: ${{ needs.versioning.outputs.NEW_VERSION }}  # Use output from previous job
+      REGISTRY: ${{ secrets.DOCKERHUB_USERNAME }}  # Pass the Docker Hub username as the registry
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}  # Passing secrets as inputs to reusable workflow
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}  # Passing secrets as inputs to reusable workflow

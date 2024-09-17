@@ -25,7 +25,7 @@ on:
         required: true
 
 jobs:
-  build_and_push:
+  Build_and_push:
     runs-on: ubuntu-latest
     steps:
       - name: Login to Docker Hub
