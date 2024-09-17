@@ -12,6 +12,7 @@ env:
   IMAGE_NAME: bookhub
   PROJECT_PATH: BookHub.csproj
   DOCKER_FILE_PATH: ./Dockerfile
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE20: true
 
 permissions:
   contents: write  # Grant the workflow permission to push to the repository
