@@ -10,7 +10,8 @@ on:
 env:
   REGISTRY: ${{ secrets.DOCKERHUB_USERNAME }}
   IMAGE_NAME: bookhub
-  PUSH: ${{ github.ref == 'refs/heads/master' }}
+#  PUSH: ${{ github.ref == 'refs/heads/master' }}
+  PUSH: true
   VERSION_NUMBER: 1.${{ github.run_number }}
 
 jobs:
@@ -27,11 +28,11 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Get current Git tag
-        id: get-tag
+      - name: Extract version from .csproj
+        id: extract_version
         run: |
-          TAG=$(git describe --tags --abbrev=0 || echo "latest")
-          echo "IMAGE_TAG=$TAG" >> $GITHUB_ENV
+          VERSION=$(cat **/*.csproj | grep '<Version>' | sed -e 's/<[^>]*>//g' | xargs || echo "1.0.0")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Build and push docker image
         uses: docker/build-push-action@v2
