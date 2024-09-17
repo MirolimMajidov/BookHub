@@ -25,12 +25,13 @@ jobs:
       project_path: 'BookHub.csproj'
 
   Release:
-    needs: versioning
+    needs: Versioning
+    if: ${{ needs.Versioning.outputs.NEW_VERSION != '' }}  # Check if NEW_VERSION has a value
     uses: ./.github/workflows/docker-build-push.yml
     with:
       docker_file_path: './Dockerfile'
       image_name: 'bookhub'
-      version: ${{ needs.versioning.outputs.NEW_VERSION }}
+      version: ${{ needs.Versioning.outputs.NEW_VERSION }}
     secrets:
       username: ${{ secrets.DOCKERHUB_USERNAME }}
       password: ${{ secrets.DOCKERHUB_TOKEN }}
