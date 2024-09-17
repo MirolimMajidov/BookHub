@@ -69,3 +69,6 @@ jobs:
         run: |
           git tag "v${{ env.NEW_VERSION }}"
           git push origin "v${{ env.NEW_VERSION }}"
+
+    outputs:
+      NEW_VERSION: ${{ env.NEW_VERSION }}
