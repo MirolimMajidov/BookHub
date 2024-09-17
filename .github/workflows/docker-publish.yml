@@ -24,6 +24,14 @@ jobs:
     with:
       project_path: 'BookHub.csproj'
 
+  CheckVersion:
+    needs: Versioning
+    runs-on: ubuntu-latest
+    steps:
+      - name: Use the new version
+        run: |
+          echo "The new version is ${{ needs.Versioning.outputs.NEW_VERSION }}"
+        
   Release:
     needs: Versioning
     if: ${{ needs.Versioning.outputs.NEW_VERSION != '' }}  # Check if NEW_VERSION has a value
