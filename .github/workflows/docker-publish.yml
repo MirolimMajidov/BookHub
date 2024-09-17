@@ -1,29 +1,25 @@
 name: Build and push Docker image to Docker Hub
 
+# Controls when the workflow will run
 on:
+  # Triggers the workflow on push or pull request events but only for the master branch
   push:
     branches: [ "master" ]
+
   pull_request:
     branches: [ "master" ]
-  workflow_dispatch:
 
 env:
   REGISTRY: ${{ secrets.DOCKERHUB_USERNAME }}
   IMAGE_NAME: bookhub
+  PUSH: ${{ github.ref == 'refs/heads/master' }}
   VERSION_NUMBER: 1.${{ github.run_number }}
 
-permissions:
-  contents: read # for checkout
 
 jobs:
   push_to_registry:
     name: Push Docker images to Docker Hub
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      issues: write
-      pull-requests: write
-      id-token: write
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
@@ -33,6 +29,12 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      - name: Get current Git tag
+        id: get-tag
+        run: |
+          TAG=$(git describe --tags --abbrev=0)
+          echo "IMAGE_TAG=$TAG" >> $GITHUB_ENV
 
       - name: Build and push docker image
         id: docker_build_identity
@@ -40,48 +42,8 @@ jobs:
         with:
           context: .
           file: ././Dockerfile
-          push: ${{ github.ref == 'refs/heads/master' }}
+          push: ${{ env.PUSH }}
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION_NUMBER }}
-  
-  release:
-    name: Release
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write # to be able to publish a GitHub release
-      issues: write # to be able to comment on released issues
-      pull-requests: write # to be able to comment on released pull requests
-      id-token: write # to enable use of OIDC for npm provenance
-    steps:
-      - name: ⬇️ Checkout repo
-        uses: actions/checkout@v4
-
-      - name: ⎔ Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 14
-
-      - name: 📥 Download deps
-        uses: bahmutov/npm-install@v1
-        with:
-          useLockFile: false
-
-      - name: 🏗 Run build script
-        run: npm run build
-
-      - name: 🚀 Release
-        uses: cycjimmy/semantic-release-action@v2
-        with:
-          semantic_version: 17
-          branches: |
-            [
-              'main',
-              'master',
-              'MirolimMajidov-TestVersioning',
-              {name: 'beta', prerelease: true},
-              {name: 'alpha', prerelease: true}
-            ]
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
