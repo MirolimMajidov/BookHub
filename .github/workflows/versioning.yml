@@ -71,4 +71,4 @@ jobs:
           echo "The new version is ${{ env.NEW_VERSION }}"
 
     outputs:
-      NEW_VERSION: ${{ env.NEW_VERSION }}
+      NEW_VERSION: "123"
