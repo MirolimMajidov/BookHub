@@ -9,7 +9,7 @@ on:
     outputs:
       version:
         description: "The first output string"
-        value: ${{ env.NEW_VERSION }}
+        value: ${{ jobs.IncreaseVersion.outputs.NEW_VERSION }}
 
 jobs:
   IncreaseVersion:
@@ -69,10 +69,3 @@ jobs:
         run: |
           git tag "v${{ env.NEW_VERSION }}"
           git push origin "v${{ env.NEW_VERSION }}"
-          
-      - name: Print the new version
-        run: |
-          echo "The new version is ${{ env.NEW_VERSION }}"
-
-    outputs:
-      NEW_VERSION: "123"
