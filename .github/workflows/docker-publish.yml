@@ -23,8 +23,6 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
-        with:
-          ref: MirolimMajidov-TestVersioning  # Ensure you're checking out the correct branch
 
       - name: Extract and update version from .csproj
         id: update_version
