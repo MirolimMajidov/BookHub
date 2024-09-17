@@ -8,7 +8,7 @@ on:
         type: string
     outputs:
       version:
-        description: "The first output string"
+        description: "The new version of the project"
         value: ${{ jobs.IncreaseVersion.outputs.NEW_VERSION }}
 
 jobs:

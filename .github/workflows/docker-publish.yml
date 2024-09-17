@@ -23,23 +23,14 @@ jobs:
     uses: ./.github/workflows/versioning.yml
     with:
       project_path: 'BookHub.csproj'
-
-  CheckVersion:
-    needs: Versioning
-    runs-on: ubuntu-latest
-    steps:
-      - name: Print the new version
-        run: |
-          echo "The new version is ${{ needs.Versioning.outputs.version }}"
         
-#  Release:
-#    needs: Versioning
-#    if: ${{ needs.Versioning.outputs.NEW_VERSION != '' }}  # Check if NEW_VERSION has a value
-#    uses: ./.github/workflows/docker-build-push.yml
-#    with:
-#      docker_file_path: './Dockerfile'
-#      image_name: 'bookhub'
-#      version: ${{ needs.Versioning.outputs.NEW_VERSION }}
-#    secrets:
-#      username: ${{ secrets.DOCKERHUB_USERNAME }}
-#      password: ${{ secrets.DOCKERHUB_TOKEN }}
+  Release:
+    needs: Versioning
+    uses: ./.github/workflows/docker-build-push.yml
+    with:
+      docker_file_path: './Dockerfile'
+      image_name: 'bookhub'
+      version: ${{ needs.Versioning.outputs.version }}
+    secrets:
+      username: ${{ secrets.DOCKERHUB_USERNAME }}
+      password: ${{ secrets.DOCKERHUB_TOKEN }}
