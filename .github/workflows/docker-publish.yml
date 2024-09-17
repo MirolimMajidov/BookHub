@@ -30,7 +30,7 @@ jobs:
     steps:
       - name: Print the new version
         run: |
-          echo "The new version is ${{ needs.Versioning.outputs.firstword }}"
+          echo "The new version is ${{ needs.Versioning.outputs.version }}"
         
 #  Release:
 #    needs: Versioning
