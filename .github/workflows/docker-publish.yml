@@ -10,8 +10,6 @@ on:
 env:
   REGISTRY: ${{ secrets.DOCKERHUB_USERNAME }}
   IMAGE_NAME: bookhub
-  PUSH: true
-  VERSION_NUMBER: 1.${{ github.run_number }}
   PROJECT_PATH: BookHub.csproj
   DOCKER_FILE_PATH: ./Dockerfile
 
@@ -95,5 +93,4 @@ jobs:
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION_NUMBER }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.NEW_VERSION }}
