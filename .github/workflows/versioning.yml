@@ -7,9 +7,9 @@ on:
         required: true
         type: string
     outputs:
-      firstword:
+      version:
         description: "The first output string"
-        value: 12345
+        value: ${{ env.NEW_VERSION }}
 
 jobs:
   IncreaseVersion:
