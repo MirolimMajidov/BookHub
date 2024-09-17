@@ -7,18 +7,12 @@ on:
     branches: [ "master" ]
   workflow_dispatch:
 
-env:
-  REGISTRY: ${{ secrets.DOCKERHUB_USERNAME }}
-  IMAGE_NAME: bookhub
-  PROJECT_PATH: BookHub.csproj
-  DOCKER_FILE_PATH: ./Dockerfile
-
 permissions:
   contents: write  # Grant the workflow permission to push to the repository
 
 jobs:
   CheckOutCode:
-    name: Push Docker images to Docker Hub
+    name: Check out repository code
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
@@ -28,13 +22,13 @@ jobs:
     needs: CheckOutCode
     uses: ./.github/workflows/versioning.yml
     with:
-      PROJECT_PATH: ${{ env.PROJECT_PATH }}
+      PROJECT_PATH: 'BookHub.csproj'  # Passing as string instead of env
 
   docker_build_and_push:
     needs: versioning
     uses: ./.github/workflows/docker-build-push.yml
     with:
-      DOCKER_FILE_PATH: ${{ env.DOCKER_FILE_PATH }}
-      REGISTRY: ${{ env.REGISTRY }}
-      IMAGE_NAME: ${{ env.IMAGE_NAME }}
-      NEW_VERSION: ${{ needs.versioning.outputs.NEW_VERSION }}
+      DOCKER_FILE_PATH: './Dockerfile'  # Passing as string instead of env
+      REGISTRY: ${{ secrets.DOCKERHUB_USERNAME }}  # Directly using secret
+      IMAGE_NAME: 'bookhub'  # Passing as string instead of env
+      NEW_VERSION: ${{ needs.versioning.outputs.NEW_VERSION }}  # Use output from previous job
