@@ -33,7 +33,9 @@ jobs:
           # Split the version into major, minor, and patch components
           IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
           
-          # Check if PATCH is unset or empty and default to 0 if needed
+          # Set default values if components are empty
+          MAJOR=${MAJOR:-1}
+          MINOR=${MINOR:-0}
           PATCH=${PATCH:-0}
           
           # Increment the patch version
