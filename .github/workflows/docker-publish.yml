@@ -24,41 +24,46 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v2
 
-
       - name: Extract and update version from .csproj
         id: update_version
         run: |
           # Extract current version from the .csproj file
           VERSION=$(grep '<Version>' BookHub.csproj | sed -e 's/<[^>]*>//g' || echo "1.0.0")
-
+          
           # Split the version into major, minor, and patch components
           IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
-
+          
           # Check if PATCH is unset or empty and default to 0 if needed
           PATCH=${PATCH:-0}
-
+          
           # Increment the patch version
           PATCH=$((PATCH+1))
-
+          
           # Create the new version
           NEW_VERSION="$MAJOR.$MINOR.$PATCH"
           echo "New version: $NEW_VERSION"
-
-          # Replace the version in the .csproj file
-          sed -i "s/<Version>.*<\/Version>/<Version>$NEW_VERSION<\/Version>/" BookHub.csproj || echo "<Version>$NEW_VERSION</Version>" >> BookHub.csproj
-
+          
+          # Ensure the .csproj file has a <Version> tag
+          if grep -q '<Version>' BookHub.csproj; then
+            # Replace the version in the .csproj file
+            sed -i "s/<Version>.*<\/Version>/<Version>$NEW_VERSION<\/Version>/" BookHub.csproj
+          else
+            # Add the version tag if not present
+            sed -i "s|</Project>|<Version>$NEW_VERSION</Version></Project>|" BookHub.csproj
+          fi
+          
           # Save the new version as an environment variable
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
           # Set up git
           git config user.name github-actions
           git config user.email github-actions@github.com
-
+          
           # Commit and push the updated .csproj file back to the same branch
           git checkout -B MirolimMajidov-TestVersioning
           git add BookHub.csproj
           git commit -m "Update version to $NEW_VERSION"
-          git push origin MirolimMajidov-TestVersioning
+          git push origin MirolimMajidov-TestVersioning || true
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v1
