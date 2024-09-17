@@ -47,6 +47,10 @@ jobs:
           
           # Create the new version
           NEW_VERSION="$MAJOR.$MINOR.$PATCH"
+          
+          # Remove leading and trailing spaces
+          NEW_VERSION=$(echo "$NEW_VERSION" | xargs)
+          
           echo "New version: $NEW_VERSION"
           
           # Ensure the .csproj file has a <Version> tag
