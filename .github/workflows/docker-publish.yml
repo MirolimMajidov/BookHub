@@ -43,16 +43,12 @@ jobs:
           # Save the new version as an environment variable
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
-          # Get the branch name that triggered the workflow
-          BRANCH_NAME=${{ github.ref }}
-          BRANCH_NAME=${BRANCH_NAME#refs/heads/}
-
           # Set up git
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add .
           git commit -m "Update image in gitops"
-          git push -f --set-upstream origin BRANCH_NAME
+          git push -f --set-upstream origin MirolimMajidov-TestVersioning
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v1
