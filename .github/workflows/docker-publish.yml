@@ -1,20 +1,17 @@
 name: Build and push Docker image to Docker Hub
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
   push:
     branches: [ "master" ]
-
   pull_request:
     branches: [ "master" ]
+  workflow_dispatch:
 
 env:
   REGISTRY: ${{ secrets.DOCKERHUB_USERNAME }}
   IMAGE_NAME: bookhub
   PUSH: ${{ github.ref == 'refs/heads/master' }}
   VERSION_NUMBER: 1.${{ github.run_number }}
-
 
 jobs:
   push_to_registry:
@@ -29,20 +26,19 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      
+
       - name: Get current Git tag
         id: get-tag
         run: |
-          TAG=$(git describe --tags --abbrev=0)
+          TAG=$(git describe --tags --abbrev=0 || echo "latest")
           echo "IMAGE_TAG=$TAG" >> $GITHUB_ENV
 
       - name: Build and push docker image
-        id: docker_build_identity
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: ././Dockerfile
-          #push: ${{ env.PUSH }}
+          file: ./Dockerfile
+          push: ${{ env.PUSH }}
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION_NUMBER }}
