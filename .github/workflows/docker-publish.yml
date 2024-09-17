@@ -49,7 +49,7 @@ jobs:
             sed -i "s/<Version>.*<\/Version>/<Version>$NEW_VERSION<\/Version>/" BookHub.csproj
           else
             # Add the version tag if not present
-            sed -i "s|</Project>|<Version>$NEW_VERSION</Version></Project>|" BookHub.csproj
+            sed -i "s|</Project>|<PropertyGroup><Version>$NEW_VERSION</Version></PropertyGroup></Project>|" BookHub.csproj
           fi
           
           # Save the new version as an environment variable
