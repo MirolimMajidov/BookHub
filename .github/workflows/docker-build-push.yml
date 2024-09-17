@@ -17,6 +17,9 @@ on:
         type: string
 
     secrets:
+      DOCKERHUB_USERNAME:
+        description: 'Docker Hub username'
+        required: true
       DOCKERHUB_TOKEN:
         description: 'Docker Hub token'
         required: true
@@ -29,7 +32,7 @@ jobs:
         id: login_docker_hub
         uses: docker/login-action@v3
         with:
-          username: ${{ inputs.REGISTRY }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push Docker image
@@ -39,5 +42,5 @@ jobs:
           file: ${{ inputs.DOCKER_FILE_PATH }}
           push: true
           tags: |
-            ${{ inputs.REGISTRY }}/${{ inputs.IMAGE_NAME }}:latest
-            ${{ inputs.REGISTRY }}/${{ inputs.IMAGE_NAME }}:${{ inputs.NEW_VERSION }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.IMAGE_NAME }}:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.IMAGE_NAME }}:${{ inputs.NEW_VERSION }}
