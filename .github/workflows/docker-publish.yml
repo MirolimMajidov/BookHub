@@ -2,7 +2,7 @@ name: Build and push Docker image to Docker Hub
 
 on:
   push:
-    branches: [ "master", "MirolimMajidov-TestVersioning" ]
+    branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
   workflow_dispatch:
