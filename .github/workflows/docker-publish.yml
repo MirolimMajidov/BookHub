@@ -31,7 +31,7 @@ jobs:
       - name: Extract version from .csproj
         id: extract_version
         run: |
-          VERSION=$(cat **/BookHub.csproj | grep '<Version>' | sed -e 's/<[^>]*>//g' | xargs || echo "1.0.0")
+          VERSION=$(cat BookHub.csproj | grep '<Version>' | sed -e 's/<[^>]*>//g' | xargs || echo "1.0.0")
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Build and push docker image
