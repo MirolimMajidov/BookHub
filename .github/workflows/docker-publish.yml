@@ -42,7 +42,7 @@ jobs:
         with:
           context: .
           file: ././Dockerfile
-          push: ${{ env.PUSH }}
+          #push: ${{ env.PUSH }}
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION_NUMBER }}
