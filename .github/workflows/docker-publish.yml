@@ -21,34 +21,44 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v2
 
+
       - name: Extract and update version from .csproj
         id: update_version
         run: |
           # Extract current version from the .csproj file
           VERSION=$(cat BookHub.csproj | grep '<Version>' | sed -e 's/<[^>]*>//g' | xargs || echo "1.0.0")
-
+          
           # Split the version into major, minor, and patch components
           IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
-
+          
           # Increment the patch version
           PATCH=$((PATCH+1))
-
+          
           # Create the new version
           NEW_VERSION="$MAJOR.$MINOR.$PATCH"
           echo "New version: $NEW_VERSION"
-
+          
           # Replace the version in the .csproj file
           sed -i "s/<Version>.*<\/Version>/<Version>$NEW_VERSION<\/Version>/" BookHub.csproj
-
+          
           # Save the new version as an environment variable
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
-          # Commit and push the updated .csproj file back to the repository
+          # Set up git
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Get the branch name that triggered the workflow
+          BRANCH_NAME=${{ github.ref }}
+          BRANCH_NAME=${BRANCH_NAME#refs/heads/}
+          
+          # Ensure we're on the right branch
+          git checkout $BRANCH_NAME
+          
+          # Commit and push the updated .csproj file back to the triggering branch
           git add BookHub.csproj
           git commit -m "Update version to $NEW_VERSION"
-          git push
+          git push origin $BRANCH_NAME
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v1
