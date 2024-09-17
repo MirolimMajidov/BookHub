@@ -22,15 +22,15 @@ jobs:
     needs: CheckOutCode
     uses: ./.github/workflows/versioning.yml
     with:
-      PROJECT_PATH: 'BookHub.csproj'  # Passing as string instead of env
+      PROJECT_PATH: 'BookHub.csproj'
 
   Release:
     needs: versioning
     uses: ./.github/workflows/docker-build-push.yml
     with:
-      DOCKER_FILE_PATH: './Dockerfile'  # Passing as string instead of env
-      IMAGE_NAME: 'bookhub'  # Passing as string instead of env
-      NEW_VERSION: ${{ needs.versioning.outputs.NEW_VERSION }}  # Use output from previous job
+      docker_file_path: './Dockerfile'
+      image_name: 'bookhub'
+      version: ${{ needs.versioning.outputs.NEW_VERSION }}
     secrets:
-      username: ${{ secrets.DOCKERHUB_USERNAME }}  # Passing secrets as inputs to reusable workflow
-      password: ${{ secrets.DOCKERHUB_TOKEN }}  # Passing secrets as inputs to reusable workflow
+      username: ${{ secrets.DOCKERHUB_USERNAME }}
+      password: ${{ secrets.DOCKERHUB_TOKEN }}
