@@ -16,13 +16,13 @@ on:
         required: true
         type: string
 
-#    secrets:
-#      DOCKERHUB_USERNAME:
-#        description: 'Docker Hub username'
-#        required: true
-#      DOCKERHUB_TOKEN:
-#        description: 'Docker Hub token'
-#        required: true
+    secrets:
+      DOCKERHUB_USERNAME2:
+        description: 'Docker Hub username'
+        required: true
+      DOCKERHUB_TOKEN2:
+        description: 'Docker Hub token'
+        required: true
 
 jobs:
   Build_and_push:
